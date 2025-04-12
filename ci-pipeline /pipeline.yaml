@@ -2,10 +2,10 @@ name: Deploy to Docker Hub
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
-  REPOSITORY: quasarcelestio/repo
+  REPOSITORY: quasarcelestio/maya-repo
 
 jobs:
   deploy:
