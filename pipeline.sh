@@ -4,12 +4,17 @@
 echo "→ Enter the GitHub link for the repository:"
 read -r GITHUB_LINK
 
+touch github_link.txt
+echo $GITHUB_LINK > github_link.txt
+
 mkdir -p repos
 DIR_COUNT=$(find repos -mindepth 1 -maxdepth 1 -type d | wc -l)
 echo "Number of directories in 'repos': $DIR_COUNT"
 
 git clone "$GITHUB_LINK" "repos/repo-$((DIR_COUNT+1))"
 cd repos/"repo-$((DIR_COUNT+1))" 
+
+
 
 DIR_COUNT=$((DIR_COUNT+1))
 
@@ -59,7 +64,7 @@ fi
 echo "Do you have already setup a github action pipeline? (yes/no):"
 read -r GITHUB_ACTION
 if [[ "$GITHUB_ACTION" == "no" ]]; then
-  echo "Creating a new GitHub Action file..."
+  echo "Creating a new GitHub Action Pipeline..."
   mkdir -p .github/workflows
   cp ../../ci-pipeline\ /pipeline.yaml ./.github/workflows/pipeline.yaml
   echo "→ GitHub Action pipeline created successfully."
@@ -69,6 +74,7 @@ echo "ALERT SETUP YOUR DOCKERHUB_PAT and DOCKERHUB_USERNAME in the GitHub Secret
 
 echo "Give the branch name :"
 read -r BRANCH_NAME
+git checkout "$BRANCH_NAME"
 
 git add .
 git commit -m "Added Dockerfile and GitHub Action pipeline"

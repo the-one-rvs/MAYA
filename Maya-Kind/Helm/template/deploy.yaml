@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: devsecops-demo=quasarcelestio/devsecops
+    argocd-image-updater.argoproj.io/devsecops-demo.update-strategy: latest
+    argocd-image-updater.argoproj.io/devsecops-demo.allow-tags: regexp:build-\d+$
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: PORT
+              value: {{ .Values.service.port  }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory | default "128Mi" }}
+              cpu: {{ .Values.resources.requests.cpu | default "100m" }}
+            limits:
+              memory: {{ .Values.resources.limits.memory | default "128Mi" }}
+              cpu: {{ .Values.resources.limits.cpu | default "200m" }}

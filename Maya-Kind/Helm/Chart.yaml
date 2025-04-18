@@ -1,0 +1,5 @@
+apiVersion: v2
+name: Maya-Kind
+description: A Helm chart for my Node.js application of Maya-Kind
+version: 0.1.0
+appVersion: "1.0.0"

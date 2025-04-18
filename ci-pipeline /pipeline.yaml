@@ -2,10 +2,14 @@ name: Deploy to Docker Hub
 
 on:
   push:
-    branches: [ main ]
-
+    paths-ignore:
+      - 'Maya-Kind-Manifest/**'
+      - '**.md'
+      
 env:
-  REPOSITORY: quasarcelestio/maya-repo
+  REPOSITORY: ${{ secrets.DOCKERHUB_USERNAME }}/maya-repo
+  BRANCH_NAME: ${{ github.ref_name }}
+
 
 jobs:
   deploy:
@@ -14,6 +18,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH_NAME }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -26,7 +32,7 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: ${{ env.REPOSITORY }}:${{ github.run_number }}
+        image-ref: ${{ env.REPOSITORY }}:0.1.${{ github.run_number }}
         format: 'json'
         output: 'trivy-results.json'
 
@@ -43,4 +49,4 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PAT }}
 
     - name: Push Docker image
-      run: docker push ${{ env.REPOSITORY }}:${{ github.run_number }}
+      run: docker push ${{ env.REPOSITORY }}:0.1.${{ github.run_number }}
