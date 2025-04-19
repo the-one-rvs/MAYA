@@ -84,7 +84,7 @@ echo "Number of directories in 'repos': $DIR_COUNT"
 
 cd "repos/repo-$((DIR_COUNT))"
 mkdir -p Maya-Kind-Manifest
-cp -r ../../Maya-Kind/ Maya-Kind-Manifest
+cp -r ../../Maya-Kind/Helm Maya-Kind-Manifest
 
 echo "Give the branch name :"
 read -r BRANCH_NAME
@@ -158,29 +158,39 @@ else
     echo "Skipping monitoring server creation."
 fi
 
-if ! command -v ngrok &> /dev/null; then
-  echo "ngrok is not installed. Installing ngrok..."
-  
-  curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
-  echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-  sudo apt-get update
-  sudo apt-get install -y ngrok
-  echo "Go to ngrok website login/signup to get the ngrok auth token"
-  echo "Please enter your ngrok auth token:"
-  read -r NGROK_AUTH_TOKEN
-  ngrok authtoken $NGROK_AUTH_TOKEN
-  
-  echo "ngrok has been installed successfully."
-else
-  echo "ngrok is already installed."
+echo "Do you want to create a tunnel to expose your service? (yes/no)"
+read -r CREATE_TUNNEL
+
+if [ "$CREATE_TUNNEL" == "yes" ]; then
+  if ! command -v ngrok &> /dev/null; then
+    echo "ngrok is not installed. Installing ngrok..."
+
+    curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+    echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+    sudo apt-get update
+    sudo apt-get install -y ngrok
+    echo "Go to ngrok website login/signup to get the ngrok auth token"
+    echo "Please enter your ngrok auth token:"
+    read -r NGROK_AUTH_TOKEN
+    ngrok authtoken $NGROK_AUTH_TOKEN
+
+    echo "ngrok has been installed successfully."
+  else
+    echo "ngrok is already installed."
+  fi
+
+  echo "Give the WORKER Node Ip of your kind cluster"
+  read -r "NODE_IP"
+
+  echo "We are almost done! Let's create a tunnel to expose your service."
+  echo "Enjoy your ngrok tunnel!"
+
+  ngrok http $NODE_IP:$NODE_PORT
+
+  echo "Ngrok tunnel has been created successfully."
+else 
+  echo "Skipping tunnel creation."
+  echo "Done! Your Cluster is up and running."
 fi
 
-echo "Give the Node Ip of your kind cluster"
-read -r NODE_IP"
-
-echo "We are almost done! Let's create a tunnel to expose your service."
-echo "Enjoy your ngrok tunnel!"
-
-ngrok http $NODE_IP:$NODE_PORT
-
-echo "Ngrok tunnel has been created successfully."
+echo "🎉 Done! Your kind cluster is set up and ready to use."
