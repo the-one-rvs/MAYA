@@ -7,9 +7,9 @@ if ! command -v kind &> /dev/null; then
     chmod +x ./kind
     sudo mv ./kind /usr/local/bin/kind
     
-    echo "kind has been installed successfully."
+    echo "🛠️ kind has been installed successfully."
 else
-    echo "kind is already installed."
+    echo "🛠️ kind is already installed."
 fi
 
 if ! command -v kubectl &> /dev/null; then
@@ -19,9 +19,9 @@ if ! command -v kubectl &> /dev/null; then
     chmod +x ./kubectl
     sudo mv ./kubectl /usr/local/bin/kubectl
     
-    echo "kubectl has been installed successfully."
+    echo "🛠️ kubectl has been installed successfully."
 else
-    echo "kubectl is already installed."
+    echo "🛠️ kubectl is already installed."
 fi
 
 if ! command -v kubelet &> /dev/null; then
@@ -30,27 +30,27 @@ if ! command -v kubelet &> /dev/null; then
     sudo apt-get update
     sudo apt-get install -y kubelet
     
-    echo "kubelet has been installed successfully."
+    echo "🛠️ kubelet has been installed successfully."
 else
-    echo "kubelet is already installed."
+    echo "🛠️ kubelet is already installed."
 fi
 
 kind create cluster --name maya-cluster --config kind-config.yaml
 
 echo "kind cluster 'maya-cluster' has been created successfully."
 
-echo "<== Take a look at your DockerHub ==>"
-echo "What's your Docker Image is give answer in format <dockerhubusername>/<image> --Don't give tag-- ==>>"
+echo "<== Take a look at your DockerHub 👨‍💻  ==>"
+echo "🧿 🧐🔍 What's your Docker Image is give answer in format <dockerhubusername>/<image> --Don't give tag-- ==>> 🧿 "
 
 read -r $DOCKER_IMAGE
 
-echo "What's your Docker Image Tag? (check on Dockerhub) "
+echo "🧐🔍 What's your Docker Image Tag? (check on Dockerhub) 👨‍💻 "
 read -r TAG
 
-echo " What's the port number you want to expose? "
+echo " What's the port number you want to expose? 🧪"
 read -r PORT
 
-echo "What's the Node Port number you want to expose? "
+echo "What's the Node Port number you want to expose? 🧪"
 read -r NODE_PORT
 
 
@@ -74,10 +74,10 @@ service:
   nodePort: ${NODE_PORT}
 EOL
 
-echo "Helm values.yaml file has been created successfully with the provided details."
+echo "✅ Helm values.yaml file has been created successfully with the provided details."
 
 kubectl use-context kind-maya-cluster
-echo "Switched to kind-maya-cluster context."
+echo "🧐🔍 Switched to kind-maya-cluster context."
 
 DIR_COUNT=$(find repos -mindepth 1 -maxdepth 1 -type d | wc -l)
 echo "Number of directories in 'repos': $DIR_COUNT"
@@ -128,69 +128,68 @@ EOL
 
     # Apply the ArgoCD application
     kubectl apply -f argocd-app.yaml
-    echo "ArgoCD application has been created successfully."
+    echo "✅ ArgoCD application has been created successfully."
 else
     echo "Error: github_link.txt does not exist."
     exit 1
 fi
 
-echo "🎉 Done! Your Application is now deployed"
+echo "🎉 Done! Your Application is now deployed ✅"
 rm -rf github_link.txt
 
-echo "Let's Create a Monitoring Server"
+echo "🎯 Let's Create a Monitoring Server"
 
-echo "Listen You have to add the metrics you have to setup in index.js file"
-echo "Listen Maya Can Only Deploy the Monitoring Server"
-echo "You have to manually create the grafana dashboards and prometheus alerts"
+echo "🧑‍🔧 Listen You have to add the metrics you have to setup in index.js file 🧑‍🔧"
+echo "🧑‍🔧 Listen Maya Can Only Deploy the Monitoring Server 🧑‍🔧"
+echo "🧑‍🔧 You have to manually create the grafana dashboards and prometheus alerts 🧑‍🔧"
 
-echo "Do you want to create a monitoring server? (yes/no)"
+echo "🎯 Do you want to create a monitoring server? (yes/no)"
 read -r CREATE_MONITORING_SERVER
 if [ "$CREATE_MONITORING_SERVER" == "yes" ]; then
-    echo "Creating monitoring server..."
+    echo "⚙️ Creating monitoring server..."
     helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring -f ./custom_kube_prometheus_stack.yml
-    echo "Monitoring server has been created successfully."
+    echo "✅ Monitoring server has been created successfully."
     cp -r ../../svcmonitor.yaml ./Maya-Kind-Manifest/svcmonitor.yaml
     git add .
     git commit -m "Added svcmonitor.yaml for monitoring server"
     git push origin "$BRANCH_NAME"
-    echo "svcmonitor.yaml has been added and pushed to the branch $BRANCH_NAME."
+    echo "✅ svcmonitor.yaml has been added and pushed to the branch $BRANCH_NAME."
 else
-    echo "Skipping monitoring server creation."
+    echo "✅ Skipping monitoring server creation."
 fi
 
-echo "Do you want to create a tunnel to expose your service? (yes/no)"
+echo "🎯 Do you want to create a tunnel to expose your service? (yes/no)"
 read -r CREATE_TUNNEL
 
 if [ "$CREATE_TUNNEL" == "yes" ]; then
   if ! command -v ngrok &> /dev/null; then
-    echo "ngrok is not installed. Installing ngrok..."
+    echo "🧐🔍 ngrok is not installed. Installing ngrok..."
 
     curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
     echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
     sudo apt-get update
     sudo apt-get install -y ngrok
-    echo "Go to ngrok website login/signup to get the ngrok auth token"
+    echo "🧐🔍 Go to ngrok website login/signup to get the ngrok auth token"
     echo "Please enter your ngrok auth token:"
     read -r NGROK_AUTH_TOKEN
     ngrok authtoken $NGROK_AUTH_TOKEN
 
-    echo "ngrok has been installed successfully."
+    echo "✅ ngrok has been installed successfully."
   else
-    echo "ngrok is already installed."
+    echo "✅ ngrok is already installed."
   fi
 
   echo "Give the WORKER Node Ip of your kind cluster"
   read -r "NODE_IP"
 
   echo "We are almost done! Let's create a tunnel to expose your service."
-  echo "Enjoy your ngrok tunnel!"
-
   ngrok http $NODE_IP:$NODE_PORT
+  echo "✅ Enjoy your ngrok tunnel!"
 
-  echo "Ngrok tunnel has been created successfully."
+  echo "✅ Ngrok tunnel has been created successfully."
 else 
-  echo "Skipping tunnel creation."
-  echo "Done! Your Cluster is up and running."
+  echo "✅ Skipping tunnel creation."
+  echo "✅ Done! Your Cluster is up and running."
 fi
 
 echo "🎉 Done! Your kind cluster is set up and ready to use."
