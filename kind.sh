@@ -139,3 +139,45 @@ rm -rf github_link.txt
 
 echo "Let's Create a Monitoring Server"
 
+echo "Listen You have to add the metrics you have to setup in index.js file"
+echo "Listen Maya Can Only Deploy the Monitoring Server"
+echo "You have to manually create the grafana dashboards and prometheus alerts"
+
+echo "Do you want to create a monitoring server? (yes/no)"
+read -r CREATE_MONITORING_SERVER
+if [ "$CREATE_MONITORING_SERVER" == "yes" ]; then
+    echo "Creating monitoring server..."
+    helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring -f ./custom_kube_prometheus_stack.yml
+    echo "Monitoring server has been created successfully."
+    cp -r ../../svcmonitor.yaml ./Maya-Kind-Manifest/svcmonitor.yaml
+    git add .
+    git commit -m "Added svcmonitor.yaml for monitoring server"
+    git push origin "$BRANCH_NAME"
+    echo "svcmonitor.yaml has been added and pushed to the branch $BRANCH_NAME."
+else
+    echo "Skipping monitoring server creation."
+fi
+
+if ! command -v ngrok &> /dev/null; then
+  echo "ngrok is not installed. Installing ngrok..."
+  
+  curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+  echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
+  sudo apt-get update
+  sudo apt-get install -y ngrok
+  echo "Go to ngrok website login/signup to get the ngrok auth token"
+  echo "Please enter your ngrok auth token:"
+  read -r NGROK_AUTH_TOKEN
+  ngrok authtoken $NGROK_AUTH_TOKEN
+  
+  echo "ngrok has been installed successfully."
+else
+  echo "ngrok is already installed."
+fi
+
+echo "Give the Node Ip of your kind cluster"
+read -r NODE_IP"
+
+ngrok http $NODE_IP:$NODE_PORT
+
+echo "Ngrok tunnel has been created successfully."

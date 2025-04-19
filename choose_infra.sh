@@ -10,7 +10,8 @@ fi
 if [[ "$INFRA" == "kind" ]]; then
     ./kind.sh
 elif [[ "$INFRA" == "EKS" ]]; then
-    ./eks.sh
+    # ./eks.sh
+    echo "EKS infrastructure setup is not implemented yet."
 elif [[ "$INFRA" == "ECS" ]]; then
     ./ecs.sh
 elif [[ "$INFRA" == "None" ]]; then
