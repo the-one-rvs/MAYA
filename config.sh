@@ -111,3 +111,6 @@ main() {
 }
 
 main "$@"
+
+chmod +x pipeline.sh
+./pipeline.sh

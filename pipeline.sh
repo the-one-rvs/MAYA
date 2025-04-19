@@ -82,3 +82,7 @@ git push origin "$BRANCH_NAME"
 
 echo "→ GitHub Action pipeline created successfully."
 echo "→ Dockerfile created successfully."
+
+cd ../..
+chmod +x choose_infra.sh
+./choose_infra.sh

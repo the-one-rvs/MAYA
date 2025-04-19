@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Maya CLI tool
+VERSION="0.0.1"
+
+# Help message
+show_help() {
+    echo "Maya - DevOps Automation CLI"
+    echo
+    echo "Usage: maya [options]"
+    echo
+    echo "Options:"
+    echo "  --run=<command>    Run specific command (e.g., test, deploy)"
+    echo "  --version          Show version information"
+    echo "  --help            Show this help message"
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --run=*)
+            COMMAND="${1#*=}"
+            shift
+            ;;
+        --version)
+            echo "Maya CLI version $VERSION"
+            exit 0
+            ;;
+        --help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# Execute commands
+case $COMMAND in
+    "test")
+        chmod +x config.sh
+        ./config.sh
+        ;;
+    *)
+        echo "Unknown command: $COMMAND"
+        show_help
+        exit 1
+        ;;
+esac
