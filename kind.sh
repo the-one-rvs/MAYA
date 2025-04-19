@@ -178,6 +178,9 @@ fi
 echo "Give the Node Ip of your kind cluster"
 read -r NODE_IP"
 
+echo "We are almost done! Let's create a tunnel to expose your service."
+echo "Enjoy your ngrok tunnel!"
+
 ngrok http $NODE_IP:$NODE_PORT
 
 echo "Ngrok tunnel has been created successfully."
