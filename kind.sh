@@ -79,6 +79,12 @@ echo "✅ Helm values.yaml file has been created successfully with the provided 
 kubectl use-context kind-maya-cluster
 echo "🧐🔍 Switched to kind-maya-cluster context."
 
+curl -sSLo k9s_Linux_amd64.tar.gz https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz
+tar -xzf k9s_Linux_amd64.tar.gz
+sudo mv k9s /usr/local/bin/
+echo "✅ k9s has been installed successfully."
+
+
 DIR_COUNT=$(find repos -mindepth 1 -maxdepth 1 -type d | wc -l)
 echo "Number of directories in 'repos': $DIR_COUNT"
 
