@@ -101,6 +101,11 @@ git push origin "$BRANCH_NAME"
 echo "Changes have been committed and pushed to the branch $BRANCH_NAME."
 echo "🎉 Done! Your kind cluster is set up and ready to use."
 
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+echo "🎉 ArgoCD is installed"
+
 if [ -f github_link.txt ]; then
     GITHUB_LINK=$(cat github_link.txt)
     echo "GitHub Link: $GITHUB_LINK"
